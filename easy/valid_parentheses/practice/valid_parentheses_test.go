@@ -79,43 +79,30 @@ func Test_validParentheses(t *testing.T) {
 }
 
 func validParentheses(input string) bool {
-	// if the string isn't of even length,
-	// it can't be valid, so we can return early
 	if len(input)%2 != 0 || len(input) == 0 {
 		return false
 	}
 
-	// set up stack and map
-	var st []rune
-	open := map[rune]rune{
+	var closedBrackets []rune
+	closedBracketByOpenMap := map[rune]rune{
 		'(': ')',
-		'[': ']',
 		'{': '}',
+		'[': ']',
 	}
 
-	// loop over string
-	for _, r := range input {
-
-		// if the current character is in the open map,
-		// put its closer into the stack and continue
-		if closer, ok := open[r]; ok {
-			st = append(st, closer)
+	for _, bracket := range input {
+		if closed, ok := closedBracketByOpenMap[bracket]; ok {
+			closedBrackets = append(closedBrackets, closed)
 			continue
 		}
 
-		// otherwise, we're dealing with a closer
-		// check to make sure the stack isn't empty
-		// and whether the top of the stack matches
-		// the current character
-		l := len(st) - 1
-		if l < 0 || r != st[l] {
+		lastElement := len(closedBrackets) - 1
+		if lastElement < 0 || closedBrackets[lastElement] != bracket {
 			return false
 		}
 
-		// take the last element off the stack
-		st = st[:l]
+		closedBrackets = closedBrackets[:lastElement]
 	}
 
-	// if the stack is empty, return true, otherwise false
-	return len(st) == 0
+	return len(closedBrackets) == 0
 }
